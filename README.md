@@ -13,7 +13,7 @@ The original Damecon project is built on Samuel Maddock's [electron-browser-shel
 
 | App version | README updated |
 | ----------- | -------------- |
-| `v1.0.16`   | `2026-09-05`   |
+| `v1.0.17`   | `2026-09-06`   |
 
 - **Downloads:** Installers and portable archives are available from
   [GitHub Releases](https://github.com/kevinsuu/kancolle-assistant/releases).
@@ -23,6 +23,12 @@ The original Damecon project is built on Samuel Maddock's [electron-browser-shel
 - **Cumulative capabilities:** [Feature status](#feature-status) shows what the current source
   supports, what may be added later, and what is out of scope.
 - **Technical details:** The project-specific highlights below link to the relevant documents.
+
+### v1.0.17 highlights (since v1.0.16)
+
+- Expedition Recommendations now shows the best plan's combined net hourly fuel, ammunition,
+  steel, bauxite, and bucket yield. It uses the individual cards' collection intervals and
+  estimated resupply costs, while explicitly excluding a busy fleet's current return wait.
 
 ### v1.0.16 highlights (since v1.0.15)
 
@@ -55,15 +61,6 @@ The original Damecon project is built on Samuel Maddock's [electron-browser-shel
 - Normal-map recommendations add two sourced 5-4 31st Destroyer Division routes from Zekamashi,
   strengthen the shared Mikawa quest fleet and Formula 33 requirements, and expand the reviewed
   catalog to 167 templates.
-
-### v1.0.12 highlights (since v1.0.11)
-
-- Quest Recommendations adds multi-select quest-type filters, advice-priority sorting, and local
-  persistence for filters and sorting across page navigation and application restarts.
-- Shared quest planning now keeps overlapping alternatives visible and derives compatible arsenal
-  discard actions from quest requirements, while preserving the best primary plan.
-- Normal-map recommendations add two sourced carrier-free 3-1 C-F-G fleets for the annual
-  Japan-US-UK quest, with language-independent canonical ship-name matching.
 
 ### Project-specific highlights
 

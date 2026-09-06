@@ -1,7 +1,7 @@
 {
   "name": "kancolle-assistant",
   "productName": "KanColle Assistant",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "A minimal browser designed for playing Kantai Collection via KC3Kai.",
   "repository": "https://github.com/kevinsuu/kancolle-assistant",
   "main": ".webpack/main",
