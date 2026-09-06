@@ -643,7 +643,9 @@ export const jp = {
   'expedition.resourcePriorityFor': '{resource}の優先順位',
   'expedition.resourceModeFor': '{resource}の入手設定',
   'expedition.bucketPerTrip': '最大 +{count}／回',
-  'expedition.bucketPlanSummary': 'バケツ期待値 {value}／時',
+  'expedition.planHourlyTotal': 'おすすめ遠征の1時間あたり純収益合計',
+  'expedition.planHourlyTotalAfterDispatch':
+    'おすすめ遠征の1時間あたり純収益合計（現在の待ち時間を除く）',
   'expedition.schedule': '出発／受取間隔',
   'expedition.scheduleHint':
     '0分は常時オンライン。それ以外は固定間隔で受け取り、再出発として計算します',

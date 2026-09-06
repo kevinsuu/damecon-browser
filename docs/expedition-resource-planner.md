@@ -346,8 +346,11 @@ shows:
   guidance.
 
 The result starts with a large dispatch board such as `第 3 艦隊 → 03 警備任務`, so destination
-and fleet assignment appear immediately without a separate score-summary card row. Its state has
-five explicit actions:
+and fleet assignment appear immediately. Above those assignments, a compact hourly total adds the
+recommended set's net fuel, ammunition, steel, and bauxite rates plus its expected bucket rate. The
+total uses the same effective collection intervals and estimated resupply costs as the individual
+cards; when any assigned fleet is busy, it explicitly excludes the current wait before that fleet
+can dispatch the recommendation. The dispatch state has five explicit actions:
 
 - `現在可派遣`: the fleet is free, supplied, and passes every known condition;
 - `等待返航`: wait for the displayed return time, then perform any listed supply or composition

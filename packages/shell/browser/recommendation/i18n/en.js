@@ -663,7 +663,9 @@ export const en = {
   'expedition.resourcePriorityFor': '{resource} priority',
   'expedition.resourceModeFor': '{resource} setting',
   'expedition.bucketPerTrip': 'Up to +{count}/trip',
-  'expedition.bucketPlanSummary': 'Bucket expected {value}/h',
+  'expedition.planHourlyTotal': 'Combined net yield per hour',
+  'expedition.planHourlyTotalAfterDispatch':
+    'Combined net yield per hour (excluding the current wait)',
   'expedition.schedule': 'Dispatch/collection interval',
   'expedition.scheduleHint':
     '0 minutes means continuously online; otherwise collect and redispatch at this interval',

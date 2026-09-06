@@ -726,6 +726,40 @@ const renderDispatchStep = ({ expedition, fleet }, index) => {
   `
 }
 
+export const expeditionPlanHourlyTotalsMarkup = (plan) => {
+  const totalRows = [
+    ...resources.map((resource) => ({
+      ...resource,
+      digits: 1,
+      value: plan.hourlyIncome[resource.key],
+    })),
+    {
+      key: 'bucket',
+      color: '#3b9d91',
+      digits: 2,
+      value: plan.bucketPotentialHourly,
+    },
+  ]
+  const labelKey = plan.pairings.some(({ fleet }) => fleet.busy)
+    ? 'expedition.planHourlyTotalAfterDispatch'
+    : 'expedition.planHourlyTotal'
+  return `
+    <div class="dep-plan-totals" aria-label="${t(labelKey)}">
+      <strong class="dep-plan-total-label">${t(labelKey)}</strong>
+      ${totalRows
+        .map(
+          (row) => `
+            <span class="dep-plan-total" style="--dep-resource:${row.color}">
+              <b>${t(`common.${row.key}`)}</b>
+              <em>${formatSigned(row.value, row.digits)}${t('common.perHour')}</em>
+            </span>
+          `,
+        )
+        .join('')}
+    </div>
+  `
+}
+
 const renderPairing = ({ expedition, fleet }) => {
   const state = pairingState(fleet)
   const perHourLabel = fleet.busy ? t('expedition.perHourAfterDispatch') : t('common.perHour')
@@ -809,8 +843,9 @@ const renderPlan = (plan) => {
       <section class="dep-dispatch-board page_panel bscolor4 fcolor2">
         <div class="dep-dispatch-title">
           <h3>${t('expedition.bestPlan')}</h3>
-          <span>${escapeHtml(modifierText(plan.pairings[0].expedition.modifier))}${plan.bucketWeight !== 0 ? ` · ${t('expedition.bucketPlanSummary', { value: formatNumber(plan.bucketPotentialHourly, 2) })}` : ''}</span>
+          <span>${escapeHtml(modifierText(plan.pairings[0].expedition.modifier))}</span>
         </div>
+        ${expeditionPlanHourlyTotalsMarkup(plan)}
         <div class="dep-dispatch-steps">${plan.pairings.map(renderDispatchStep).join('')}</div>
       </section>
       <div class="dep-pairing-list">${plan.pairings.map(renderPairing).join('')}</div>

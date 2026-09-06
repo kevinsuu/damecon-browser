@@ -19,6 +19,7 @@ import {
 } from '../browser/recommendation/i18n.js'
 import {
   EXPEDITION_PLANNER_SETTINGS_STORAGE_KEY,
+  expeditionPlanHourlyTotalsMarkup,
   readExpeditionPlannerSettings,
   writeExpeditionPlannerSettings,
 } from '../browser/recommendation/expedition-goal-ui.js'
@@ -158,6 +159,28 @@ test('priority order movement keeps ranks unique and continuous', () => {
   )
 
   assert.deepEqual(moved, ['steel', 'bucket', 'fuel', 'bauxite', 'ammo'])
+})
+
+test('expedition best plan shows aggregate hourly resources and bucket expectation', () => {
+  const plan = {
+    hourlyIncome: { fuel: 120.5, ammo: -8, steel: 60, bauxite: 42.25 },
+    bucketPotentialHourly: 1.125,
+    pairings: [{ fleet: { busy: true } }, { fleet: { busy: false } }],
+  }
+  const markup = expeditionPlanHourlyTotalsMarkup(plan)
+
+  assert.match(markup, /dep-plan-total-label/)
+  assert.match(markup, /excluding the current wait/)
+  assert.match(markup, /<b>Fuel<\/b>\s*<em>\+120\.5\/h<\/em>/)
+  assert.match(markup, /<b>Ammo<\/b>\s*<em>-8\.0\/h<\/em>/)
+  assert.match(markup, /<b>Buckets<\/b>\s*<em>\+1\.13\/h<\/em>/)
+  assert.doesNotMatch(
+    expeditionPlanHourlyTotalsMarkup({
+      ...plan,
+      pairings: plan.pairings.map(() => ({ fleet: { busy: false } })),
+    }),
+    /excluding the current wait/,
+  )
 })
 
 test('quest recommendations order by guidance, defer daily ties, then use deadline', () => {
@@ -2309,6 +2332,8 @@ test('expedition status safeguards exist in all supported languages', () => {
     'expedition.perHourAfterDispatch',
     'expedition.supplyAfterReturn',
     'expedition.weightTooltip',
+    'expedition.planHourlyTotal',
+    'expedition.planHourlyTotalAfterDispatch',
   ]
   ;[en, jp, scn, tcn].forEach((catalog) => {
     keys.forEach((key) => assert.equal(typeof catalog[key], 'string', key))
