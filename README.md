@@ -13,7 +13,7 @@ The original Damecon project is built on Samuel Maddock's [electron-browser-shel
 
 | App version | README updated |
 | ----------- | -------------- |
-| `v1.0.17`   | `2026-09-06`   |
+| `v1.0.18`   | `2026-09-07`   |
 
 - **Downloads:** Installers and portable archives are available from
   [GitHub Releases](https://github.com/kevinsuu/kancolle-assistant/releases).
@@ -23,6 +23,12 @@ The original Damecon project is built on Samuel Maddock's [electron-browser-shel
 - **Cumulative capabilities:** [Feature status](#feature-status) shows what the current source
   supports, what may be added later, and what is out of scope.
 - **Technical details:** The project-specific highlights below link to the relevant documents.
+
+### v1.0.18 highlights (since v1.0.17)
+
+- Master Ship remodel-material tooltips now list each requirement with its icon, localized material
+  name, and quantity, including KC3's high-resolution special-material icons.
+- Fixed KC3 extension tab commands from BrowserView tabs, preventing failures when KC3 opens a tab.
 
 ### v1.0.17 highlights (since v1.0.16)
 
@@ -53,15 +59,6 @@ The original Damecon project is built on Samuel Maddock's [electron-browser-shel
 - Quest Recommendations now automatically includes open and accepted KC3 time-limited quests under
   **Other**, labels them as time-limited, and warns when KC3 does not provide a final deadline.
 
-### v1.0.13 highlights (since v1.0.12)
-
-- Selected-route fleet recommendations now compare a valid current fleet with a bounded set of
-  synthesized alternatives, allowing stronger reserve ships to rank first without discarding the
-  current loadout candidate.
-- Normal-map recommendations add two sourced 5-4 31st Destroyer Division routes from Zekamashi,
-  strengthen the shared Mikawa quest fleet and Formula 33 requirements, and expand the reviewed
-  catalog to 167 templates.
-
 ### Project-specific highlights
 
 Compared with the original project, this source adds or improves:
@@ -75,6 +72,7 @@ Compared with the original project, this source adds or improves:
 7. **[KC3 DevTools integration](./docs/kc3-devtools.md)** — The KC3 `KanColle` panel is moved forward and selected when game DevTools opens, reducing repeated manual navigation.
 8. **[Strategy Room pinned links](./docs/strategy-room-recent-tabs.md)** — Pin up to five Strategy Room tabs in `常用連結`; ordinary navigation keeps their order unchanged, and a sixth pin replaces the bottom link.
 9. **[Daily improvement filters](./docs/daily-improvement-filter.md)** — KC3's Daily Improvements page applies KC3's own improvable-equipment filter once by default and adds a horizontal filter containing only the equipment types currently available for improvement, while leaving the native toggle available for the complete list.
+10. **[Master Ship remodel materials](./docs/master-ship-remodel-materials.md)** — Master Ship remodel tooltips list every special material with its icon, localized name, and required quantity.
 
 These added Strategy Room interfaces follow KC3's selected language and support English,
 Traditional Chinese, Simplified Chinese, and Japanese.
@@ -241,6 +239,7 @@ Map Recommendations suggests account-owned fleets and equipment for normal maps:
 - [x] Up to five pinned KC3 Strategy Room quick links with stable ordering
 - [x] KC3 Daily Improvements opens with the improvable-equipment filter enabled and offers a
       filter containing only currently improvable equipment types
+- [x] Master Ship remodel requirements display every special material's icon, localized name, and quantity
 
 ### 🤞 Eventually
 
