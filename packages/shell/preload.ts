@@ -1,9 +1,13 @@
-import { SNAPSHOT_CHANGED_CHANNEL } from './browser/recommendation/channels'
+import {
+  MASTER_SHIP_MATERIAL_TOOLTIP_DIAGNOSTIC_CHANNEL,
+  SNAPSHOT_CHANGED_CHANNEL,
+} from './browser/recommendation/channels'
 import { injectBrowserAction } from 'electron-chrome-extensions/browser-action'
 import { injectIpc } from './preload-ipc.js'
 import { ipcRenderer } from 'electron'
 import { injectDefaultDailyImprovementFilter } from './browser/recommendation/daily-improvement-ui.js'
 import { injectExpeditionGoalPlanner } from './browser/recommendation/expedition-goal-ui.js'
+import { injectMasterShipMaterialTooltips } from './browser/recommendation/master-ship-material-tooltip-ui.js'
 import { injectFleetRecommender } from './browser/recommendation/strategy-room-ui.js'
 import { injectStrategyRoomRecentTabs } from './browser/recommendation/strategy-room-recent-ui.js'
 import { injectQuestRecommendations } from './browser/recommendation/quest-recommendation-ui.js'
@@ -13,6 +17,16 @@ import { initializeDmmCredentialAutofill } from './browser/security/dmm-credenti
 
 console.log('Trying to inject into', location.pathname)
 const invoke = (channel, data) => ipcRenderer.invoke(channel, data)
+const masterShipTooltipDiagnosticFingerprints = new Set()
+const reportMasterShipTooltipDiagnostic = (diagnostic) => {
+  const fingerprint = JSON.stringify(diagnostic)
+  if (masterShipTooltipDiagnosticFingerprints.has(fingerprint)) return
+  if (masterShipTooltipDiagnosticFingerprints.size >= 20) {
+    masterShipTooltipDiagnosticFingerprints.clear()
+  }
+  masterShipTooltipDiagnosticFingerprints.add(fingerprint)
+  ipcRenderer.send(MASTER_SHIP_MATERIAL_TOOLTIP_DIAGNOSTIC_CHANNEL, diagnostic)
+}
 
 // Inject <browser-action-list> element into WebUI
 const localPages = [
@@ -46,6 +60,7 @@ if (
       injectQuestRecommendations(invoke)
       injectStrategyRoomRecentTabs()
       injectDefaultDailyImprovementFilter()
+      injectMasterShipMaterialTooltips({ reportDiagnostic: reportMasterShipTooltipDiagnostic })
     }, 0)
   })
 }

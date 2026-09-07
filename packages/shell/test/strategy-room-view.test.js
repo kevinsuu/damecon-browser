@@ -13,6 +13,13 @@ import {
   isDailyImprovementEquipmentAvailable,
 } from '../browser/recommendation/daily-improvement-ui.js'
 import {
+  describeMasterShipMaterialTooltipMarkup,
+  enrichMasterShipMaterialTooltip,
+  enrichMasterShipMaterialTooltipMarkup,
+  getMasterShipMaterialIdentifier,
+  getMasterShipMaterialLanguage,
+} from '../browser/recommendation/master-ship-material-tooltip-ui.js'
+import {
   createStrategyRoomI18n,
   getStrategyRoomLanguage,
   getStrategyRoomLocale,
@@ -130,6 +137,83 @@ test('fleet route options show the guide name before source sites', () => {
       ],
     }),
     'CoNye・長陸最矢流｜conye.hatenablog.com + kamigame.jp',
+  )
+})
+
+test('master ship remodel material tooltips include localized material names', () => {
+  const tooltipMarkup = [
+    '<div><p>資材需求：</p></div>',
+    '<img src="/assets/img/useitems/58.png"><span>1</span>',
+    '<img src="/assets/img/client/devmat.png"><span>20</span>',
+  ].join('')
+  const enriched = enrichMasterShipMaterialTooltipMarkup(tooltipMarkup, 'zh-Hant')
+
+  assert.match(
+    enriched,
+    /class="kca-master-ship-material-list"[^>]*><img src="\/assets\/img\/useitems\/58\.png"><span class="kca-master-ship-material-name" style="min-width: 120px;">改裝設計圖<\/span><span>×1<\/span><\/div>/,
+  )
+  assert.match(
+    enriched,
+    /class="kca-master-ship-material-list"[^>]*><img src="\/assets\/img\/client\/devmat\.png"><span class="kca-master-ship-material-name" style="min-width: 120px;">開發資材<\/span><span>×20<\/span><\/div>/,
+  )
+  assert.equal(enrichMasterShipMaterialTooltipMarkup(enriched, 'zh-Hant'), enriched)
+  assert.deepEqual(getMasterShipMaterialIdentifier('/assets/img/useitems/58.png'), {
+    type: 'useitem',
+    id: 58,
+  })
+  assert.equal(getMasterShipMaterialLanguage('zh-Hans'), 'scn')
+  assert.equal(getMasterShipMaterialLanguage('ja-JP'), 'jp')
+})
+
+test('master ship remodel material tooltips enrich KC3 titlealt content', () => {
+  const attributes = new Map([
+    [
+      'titlealt',
+      '<img src="../../../../assets/img/useitems_p2/65.png"><span>2</span>' +
+        '<img src="../../../../assets/img/useitems/58.png"><span>1</span>' +
+        '<img src="../../../../assets/img/useitems/78.png"><span>2</span>',
+    ],
+  ])
+  const element = {
+    matches: (selector) => selector.includes('.tab_mstship'),
+    ownerDocument: { documentElement: { lang: 'zh-Hant' } },
+    getAttribute: (attribute) => attributes.get(attribute) ?? null,
+    setAttribute: (attribute, value) => attributes.set(attribute, value),
+  }
+
+  assert.equal(enrichMasterShipMaterialTooltip(element), true)
+  assert.equal(attributes.has('title'), false)
+  assert.match(attributes.get('titlealt'), /試製甲板用彈射器<\/span><span>×2<\/span>/)
+  assert.match(attributes.get('titlealt'), /改裝設計圖<\/span><span>×1<\/span>/)
+  assert.match(attributes.get('titlealt'), /戰鬥詳報<\/span><span>×2<\/span>/)
+})
+
+test('master ship material diagnostics preserve relative and p2 useitem paths and identifiers', () => {
+  assert.deepEqual(
+    describeMasterShipMaterialTooltipMarkup(
+      '<img src="../../../../assets/img/useitems_p2/65.png">' +
+        '<img src="../../../../assets/img/useitems/58.png">' +
+        '<img src="/assets/img/useitems/78.png">',
+      'zh-Hant',
+    ),
+    {
+      iconCount: 3,
+      icons: [
+        {
+          identifier: { type: 'useitem', id: 65 },
+          source: '../../../../assets/img/useitems_p2/65.png',
+        },
+        {
+          identifier: { type: 'useitem', id: 58 },
+          source: '../../../../assets/img/useitems/58.png',
+        },
+        {
+          identifier: { type: 'useitem', id: 78 },
+          source: '/assets/img/useitems/78.png',
+        },
+      ],
+      present: true,
+    },
   )
 })
 

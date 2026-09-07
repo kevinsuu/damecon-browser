@@ -1,7 +1,39 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { EventEmitter } from 'node:events'
+import { installExtensionWindowResolver } from '../browser/services/extension-window-routing'
 import { createWebUiBridge } from '../browser/ui/webui-bridge'
+
+test('extension window routing resolves tracked BrowserView tabs before the upstream fallback', () => {
+  const fallbackWindow = { id: 2 }
+  const browserWindow = { id: 1, isDestroyed: () => false }
+  const browserViewContents = { id: 10 }
+  const extensionStore = {
+    getWindowFromWebContents: () => fallbackWindow,
+    tabToWindow: new WeakMap([[browserViewContents, browserWindow]]),
+    windows: new Set([browserWindow]),
+  }
+  const diagnostics = []
+
+  const dispose = installExtensionWindowResolver({
+    extensionStore,
+    logger: (event, data) => diagnostics.push({ event, data }),
+  })
+
+  assert.equal(extensionStore.getWindowFromWebContents(browserViewContents), browserWindow)
+  assert.equal(extensionStore.getWindowFromWebContents(browserViewContents), browserWindow)
+  assert.equal(extensionStore.getWindowFromWebContents({ id: 11 }), fallbackWindow)
+  assert.deepEqual(diagnostics, [
+    {
+      event: 'extension.browser-view-window-resolved',
+      data: { webContentsId: 10, windowId: 1 },
+    },
+  ])
+
+  dispose()
+  assert.equal(extensionStore.getWindowFromWebContents(browserViewContents), fallbackWindow)
+})
+
 test('WebUI bridge restricts commands, strips Electron events and owns subscriptions', async () => {
   const ipc = new EventEmitter(),
     calls = []

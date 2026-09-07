@@ -1,4 +1,5 @@
 import { registerAppShutdown } from './services/app-shutdown'
+import { installExtensionWindowResolver } from './services/extension-window-routing'
 import { applyProxySettings, readProxyDestination } from './services/proxy-settings'
 import path from 'path'
 import fsSync, { utimesSync } from 'fs'
@@ -57,6 +58,7 @@ import {
 } from './devtools/kc3-devtools'
 import { createMainBootstrap } from './main-bootstrap'
 import { createKC3QuestLiveSync } from './recommendation/kc3-quest-live-sync'
+import { registerMasterShipMaterialTooltipDiagnostics } from './recommendation/master-ship-material-tooltip-ipc'
 
 import { setTimeout as delay } from 'timers/promises'
 import { debug, error } from 'console'
@@ -734,6 +736,11 @@ class Browser extends EventEmitter {
       safeStorage,
       syncQuestList: (event) => this.synchronizeQuestList(event),
     })
+    registerMasterShipMaterialTooltipDiagnostics({
+      getKc3ExtensionId: () => this.currentKc3ExtensionId,
+      ipcMain,
+      logger: (event, data) => kccp.logger.log(logSource, event, data),
+    })
     registerAppShutdown({
       app,
       dispose: () => mainBootstrap.dispose(),
@@ -852,6 +859,11 @@ class Browser extends EventEmitter {
       removeWindow: (browserWindow) => {
         this.removeWindow(browserWindow)
       },
+    })
+
+    installExtensionWindowResolver({
+      extensionStore: this.extensions.ctx.store,
+      logger: (event, data) => kccp.logger.log(logSource, event, data),
     })
 
     // Display <browser-action-list> extension icons.

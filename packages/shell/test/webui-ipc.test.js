@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { createRuntimeConfigStore } from '../browser/config/runtime-config.js'
+import {
+  isAllowedMasterShipMaterialTooltipSender,
+  registerMasterShipMaterialTooltipDiagnostics,
+} from '../browser/recommendation/master-ship-material-tooltip-ipc.js'
 import { createWebUiCommandRouter } from '../browser/ui/webui-command-router.js'
 import {
   isAllowedWebUiSender,
@@ -10,6 +14,91 @@ import {
 
 const extensionId = 'fixture-webui-extension'
 const eventFor = (url) => ({ senderFrame: { url }, sender: { getURL: () => url } })
+
+test('master ship tooltip diagnostics accept only the current KC3 Strategy Room and bound output', () => {
+  const logs = []
+  let listener
+  registerMasterShipMaterialTooltipDiagnostics({
+    getKc3ExtensionId: () => extensionId,
+    ipcMain: { on: (_channel, callback) => (listener = callback) },
+    logger: (event, data) => logs.push({ event, data }),
+  })
+  const strategyEvent = eventFor(`chrome-extension://${extensionId}/pages/strategy/strategy.html`)
+  listener(strategyEvent, {
+    contentFound: true,
+    enrichedCount: 1,
+    outcome: 'targets-observed',
+    phase: 'refresh',
+    targetCount: 1,
+    tooltips: [
+      {
+        attributes: [
+          {
+            iconCount: 1,
+            icons: [
+              {
+                identifier: { type: 'useitem', id: 58 },
+                source: `chrome-extension://${extensionId}/assets/img/useitems/58.png`,
+              },
+            ],
+            name: 'titlealt',
+            present: true,
+          },
+        ],
+        outcome: 'enriched',
+      },
+    ],
+  })
+
+  assert.equal(
+    isAllowedMasterShipMaterialTooltipSender(
+      eventFor(`chrome-extension://${extensionId}/pages/strategy/strategy.html`),
+      extensionId,
+    ),
+    true,
+  )
+  assert.equal(
+    isAllowedMasterShipMaterialTooltipSender(
+      eventFor(`chrome-extension://${extensionId}/pages/game/direct.html`),
+      extensionId,
+    ),
+    false,
+  )
+  assert.deepEqual(logs[0], {
+    event: 'master-ship-material-tooltip.diagnostic',
+    data: {
+      contentFound: true,
+      enrichedCount: 1,
+      outcome: 'targets-observed',
+      phase: 'refresh',
+      targetCount: 1,
+      tooltips: [
+        {
+          attributes: [
+            {
+              iconCount: 1,
+              icons: [
+                {
+                  identifier: 'useitem:58',
+                  source: 'chrome-extension://<extension>/assets/img/useitems/58.png',
+                },
+              ],
+              name: 'titlealt',
+              present: true,
+            },
+          ],
+          outcome: 'enriched',
+        },
+      ],
+    },
+  })
+  assert.equal(logs[1].event, 'master-ship-material-tooltip.diagnostic-detail')
+  assert.match(logs[1].data, /"identifier":"useitem:58"/)
+  assert.match(logs[1].data, /"name":"titlealt"/)
+
+  listener(eventFor('https://example.com/'), {})
+  assert.equal(logs[2].data.reasonCode, 'UNSUPPORTED_SENDER')
+})
 
 test('runtime config store serves reads from memory and persists batched updates once', () => {
   const persisted = []

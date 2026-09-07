@@ -26,6 +26,13 @@ Tab collection changes must go through `Tabs.remove()`. In particular, removing 
 during an extension reload must remove the tab objects from `tabList`; destroying their views while
 leaving the objects in the collection creates stale tab state.
 
+Extension messages from a tab's `BrowserView` must resolve their owner through the extension
+store's tab-to-window mapping before using Electron's `BrowserWindow.fromWebContents()`. Electron
+does not return a `BrowserWindow` for a `BrowserView`; without the mapping, KC3 calls such as
+`chrome.tabs.create()` fail even while their tab is open. Background-page resolution keeps the
+upstream focused-window fallback. The successful BrowserView resolution diagnostic is emitted once
+per `WebContents`, avoiding repeated logs on high-frequency extension API calls.
+
 ## KCCacheProxy boundaries
 
 The shell exposes three KCCacheProxy-facing boundaries:

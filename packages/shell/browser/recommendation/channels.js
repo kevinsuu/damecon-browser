@@ -7,3 +7,5 @@ export const RESOURCE_LEDGER_SUMMARY_CHANNEL = 'recommendation:resource-ledger-s
 export const QUEST_RECOMMENDATIONS_CHANNEL = 'recommendation:quest-recommendations'
 
 export const SNAPSHOT_CHANGED_CHANNEL = 'recommendation:snapshot-changed'
+export const MASTER_SHIP_MATERIAL_TOOLTIP_DIAGNOSTIC_CHANNEL =
+  'recommendation:master-ship-material-tooltip-diagnostic'
